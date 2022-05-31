@@ -1,0 +1,3 @@
+FUNCTION ErrorNotify GLOBAL
+    Display.ShowMessageDialog.ShowMessage Title: $'''エラーが発生しました。''' Message: cosmosDBResponse Icon: Display.Icon.ErrorIcon Buttons: Display.Buttons.OK DefaultButton: Display.DefaultButton.Button1 IsTopMost: False ButtonPressed=> ButtonPressed2
+END FUNCTION

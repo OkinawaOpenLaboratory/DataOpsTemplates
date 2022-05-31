@@ -1,0 +1,57 @@
+DateTime.GetCurrentDateTime.Current DateTimeFormat: DateTime.DateTimeFormat.DateAndTime Offset: $'''Asia/Tokyo''' CurrentDateTime=> dateTime
+Text.ConvertDateTimeToText.FromCustomDateTime DateTime: dateTime CustomFormat: $'''yyyyMMdd''' Result=> dateTime_yyyyMMdd
+Text.ConvertDateTimeToText.FromCustomDateTime DateTime: dateTime CustomFormat: $'''HH:00''' Result=> dateTime_HH00
+WebAutomation.LaunchChrome.LaunchChrome Url: $'''http://www1.river.go.jp/cgi-bin/SrchSiteSuiData2.exe?SUIKEI=90334000&BGNDATE=%dateTime_yyyyMMdd%&ENDDATE=%dateTime_yyyyMMdd%&ID=301010190001010:0201;''' WindowState: WebAutomation.BrowserWindowState.Normal ClearCache: False ClearCookies: False WaitForPageToLoadTimeout: 60 Timeout: 60 BrowserInstance=> browser
+WebAutomation.ExtractData.ExtractHtmlTable BrowserInstance: browser Control: $'''html > body > center > table > tbody > tr:eq(2) > td > table > tbody > tr > td:eq(0) > table''' ExtractionParameters: {[$'''Value #1''', $'''Value #2''', $'''Value #3'''], [$'''''', $'''''', $''''''] } PostProcessData: False TimeoutInSeconds: 60 ExtractedData=> waterLevelTable
+WebAutomation.CloseWebBrowser BrowserInstance: browser
+LOOP FOREACH row IN waterLevelTable
+    SET time TO row[1]
+    IF time = dateTime_HH00 THEN
+        SET waterLevel TO row[2]
+        EXIT LOOP
+    END
+END
+Scripting.RunPowershellScript Script: $'''$(Get-Date -format R)''' ScriptOutput=> dateTime_rfc1123 ScriptError=> ScriptError1
+Text.Trim Text: dateTime_rfc1123 TrimOption: Text.TrimOption.Both TrimmedText=> dateTime_rfc1123
+Scripting.RunPowershellScript Script: $'''$verb = \"POST\"
+$resourceType = \"%resourceType%\"
+$resourceLink = \"%resourceLink%\"
+$dateTime = \"%dateTime_rfc1123%\"
+$key = \"%primaryKey%\"
+
+$hmac = New-Object System.Security.Cryptography.HMACSHA256
+$hmac.Key = [System.Convert]::FromBase64String($key)
+$payLoad = \"$($verb.ToLowerInvariant())`n$($resourceType.ToLowerInvariant())`n$resourceLink`n$($dateTime.ToLowerInvariant())`n`n\"
+$hashPayLoad = $hmac.ComputeHash([System.Text.Encoding]::UTF8.GetBytes($payLoad))
+[System.Convert]::ToBase64String($hashPayLoad)''' ScriptOutput=> signature ScriptError=> ScriptError2
+Text.Trim Text: signature TrimOption: Text.TrimOption.Both TrimmedText=> signature
+Scripting.RunPowershellScript Script: $'''Add-Type -AssemblyName System.Web
+[System.Web.HttpUtility]::UrlEncode(“type=master&ver=1.0&sig=%signature%\")''' ScriptOutput=> authorization ScriptError=> ScriptError3
+Text.Trim Text: authorization TrimOption: Text.TrimOption.Both TrimmedText=> authorization
+Cryptography.HashText HashAlgorithm: Cryptography.HashAlgorithm.SHA256 Encoding: Cryptography.EncryptionEncoding.Unicode TextToHash: $'''%dateTime_rfc1123%benoki''' HashedText=> documentId
+Web.InvokeWebService.InvokeWebService Url: $'''https://dataops-cosmos.documents.azure.com/dbs/OkinawaRiverDB/colls/benoki/docs''' Method: Web.Method.Post Accept: $'''application/json''' ContentType: $'''application/json''' CustomHeaders: $'''x-ms-version: 2018-12-31
+x-ms-date: %dateTime_rfc1123%
+authorization: %authorization%
+x-ms-documentdb-is-upsert: True
+x-ms-documentdb-partitionkey: [ \"shimobenokigawa\" ]''' RequestBody: $'''{
+    \"id\": \"%documentId%\",
+    \"type\": \"river\",
+    \"observationPointName\": \"下辺野喜\",
+    \"riverName\": \"shimobenokigawa\",
+    \"address\": \"沖縄県国頭郡国頭村字辺野喜川河川敷\",
+    \"location\": {
+        \"type\": \"Point\",
+        \"coordinates\": [
+            26.4746,
+            128.1422
+        ]
+    },
+    \"phone\": \"0980-53-2442\",
+    \"rainfall\": null,
+    \"waterLevel\": %waterLevel%,
+    \"basinArea\": 12,
+    \"updateTime\": \"%dateTime%\"
+}''' ConnectionTimeout: 30 FollowRedirection: True ClearCookies: False FailOnErrorStatus: False EncodeRequestBody: False UserAgent: $'''Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.21) Gecko/20100312 Firefox/3.6''' Encoding: Web.Encoding.utf_8 AcceptUntrustedCertificates: False ResponseHeaders=> cosmosDBResponseHeaders Response=> cosmosDBResponse StatusCode=> cosmosDBStatusCode
+ON ERROR
+    CALL ErrorNotify
+END

@@ -1,3 +1,6 @@
+SET resourceType TO ``
+SET resourceLink TO ``
+SET primaryKey TO ``
 DateTime.GetCurrentDateTime.Current DateTimeFormat: DateTime.DateTimeFormat.DateAndTime Offset: $'''Asia/Tokyo''' CurrentDateTime=> dateTime
 Text.ConvertDateTimeToText.FromCustomDateTime DateTime: dateTime CustomFormat: $'''yyyyMMdd''' Result=> dateTime_yyyyMMdd
 Text.ConvertDateTimeToText.FromCustomDateTime DateTime: dateTime CustomFormat: $'''HH:00''' Result=> dateTime_HH00

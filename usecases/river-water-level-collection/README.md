@@ -6,7 +6,7 @@
 
 ## 設定方法
 
-### Power Automate Desktop の設定
+### 1. Power Automate Desktop の設定
 
 #### 1. 新しいフローの作成
 
@@ -40,23 +40,109 @@ Power Automate Desktop を起動し、新しいフローを作成します。
 
 <img width="949" alt="image" src="https://user-images.githubusercontent.com/8349954/172270636-52ab6a09-cd4c-4d33-95a1-e999ff51363d.png">
 
-#### 6. 入力変数の設定
+#### 6. アクションの設定
 
-入力変数を設定します。
+Mainフロー内の以下のアクション番号をダブルクリックし変数に対しての値を設定します。
 
-| 入力変数 | 設定値 |
-| --- | --- |
-| resourceType | docs |
-| resourceLink | dbs/OkinawaRiverDB/colls/benoki |
-| primaryKey | Azure Portal から取得した Cosmos DB のプライマリキー |
+| アクション番号 | 変数 | 値 |
+| --- | --- | --- |
+| 1 | resourceType | docs |
+| 2 | resourceLink | dbs/OkinawaRiverDB/colls/benoki |
+| 3 | primaryKey | Azure Portal から取得した Cosmos DB のプライマリキー |
 
-<img width="629" alt="image" src="https://user-images.githubusercontent.com/8349954/172270003-fb9c3700-466d-4fe4-8311-2bd833b6c3d4.png">
-<img width="632" alt="image" src="https://user-images.githubusercontent.com/8349954/172270192-85e78810-064a-4c15-8414-1e4597a08775.png">
-<img width="632" alt="image" src="https://user-images.githubusercontent.com/8349954/172270336-68f44c9b-c5c3-495b-ac40-90c6d575286f.png">
+<img width="629" alt="image" src="https://user-images.githubusercontent.com/73327236/172785824-8f3ffb94-df02-4c0b-9f3a-81110b758071.png">
+<img width="632" alt="image" src="https://user-images.githubusercontent.com/73327236/172791998-325efbe2-70ee-4b0a-87a0-df93e078f37e.png">
+<img width="632" alt="image" src="https://user-images.githubusercontent.com/73327236/172786153-a581c11f-60b6-424b-a2b8-5b191226a0dc.png">
 
 以上で、Power Automate Desktop の設定は完了です。
 
-### Power BI Desktop の設定
+### 2. タスク スケジューラの設定
+
+Power Automate Desktop で作成したフローを1時間毎に実行できるよう、タスク スケジューラの設定を行います。
+
+#### 1. PowerShellスクリプトファイルのダウンロード
+
+タスク スケジューラで実行する [PowerShellスクリプトファイル](https://github.com/OkinawaOpenLaboratory/DataOpsTemplates/blob/main/usecases/river-water-level-collection/power-automate-flow/startPADFlow.ps1)をダウンロードします。検索画面から PowerShell を立ち上げ、以下のコマンドを入力し、実行します。
+
+```
+curl https://raw.githubusercontent.com/OkinawaOpenLaboratory/DataOpsTemplates/main/usecases/river-water-level-collection/power-automate-flow/startPADFlow.ps1 > ~/Downloads/startPADFlow.ps1
+```
+
+![image](https://user-images.githubusercontent.com/73327236/173043743-2bbaf0f0-39db-4d9d-a786-6ca9523fdb14.png)
+
+![image](https://user-images.githubusercontent.com/73327236/173043934-a514b258-7fc8-4072-8cbe-5fa0234a69a5.png)
+
+#### 2. タスクの作成
+
+検索画面からタスク スケジューラを立ち上げます。
+
+![image](https://user-images.githubusercontent.com/73327236/173044264-90489187-7261-4d4c-8d3f-1efef8259be2.png)
+
+タスク スケジューラが起動したらタスク スケジューラ ライブラリを選択し、画面右の「タスクの作成...」を選択します。
+
+![image](https://user-images.githubusercontent.com/73327236/173044617-90b8bdd7-9fcf-401d-b2ef-38c7f17d6763.png)
+
+タスクの作成画面で各項目の設定で作成します。
+
+全般を設定します。
+
+| 設定項目 | 値 |
+| --- | --- |
+| 名前 | 河川水位収集フロー |
+| 説明 | 空欄 |
+| セキュリティオプション | ユーザーがログオンしている時のみ実行するを選択 |
+
+![image](https://user-images.githubusercontent.com/73327236/173044912-52f3ba04-e07f-4a5f-94b8-bad7b9cdd9c4.png)
+
+トリガーを設定します。
+
+新規ボタンを選択し、以下の設定を行います。
+| 設定項目 | 値 |
+| --- | --- |
+| タスクの開始 | スケジュールに従う |
+| 設定 | 1回 |
+| 開始日 | 実行する日時、時間(時間は河川水位サイトのデータ更新後の〇〇:30が好ましい) |
+| 繰り返し時間 | 1時間 |
+| 継続時間 | 無制限 |
+
+
+![image](https://user-images.githubusercontent.com/73327236/173045185-e9499e27-d6a5-466a-a5ea-12138b8f92b1.png)
+
+![image](https://user-images.githubusercontent.com/73327236/173045253-7f449127-8520-439b-a0f4-3aa7a5d4fd47.png)
+
+操作を設定します。
+
+新規ボタンを選択し、以下の設定を行います。
+
+| 設定項目 | 値 |
+| --- | --- |
+| プログラム/スクリプト | C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe |
+| 引数の追加 | -Command "C:\Users\dataops-user\Downloads\startPADFlow.ps1 -flowName <Power Automate Desktopのフロー名>" |
+
+![image](https://user-images.githubusercontent.com/73327236/173045553-2392e0e3-9553-4525-8237-556abe2b8795.png)
+
+![image](https://user-images.githubusercontent.com/73327236/173045865-ceaaf37a-2e39-4c6d-b4d4-55413f028437.png)
+
+条件はデフォルト設定のままにします。
+
+![image](https://user-images.githubusercontent.com/73327236/173045963-d61bd810-6fc7-4e7e-bc53-ca926e5e363e.png)
+
+設定はデフォルト設定のままにします。
+
+![image](https://user-images.githubusercontent.com/73327236/173046240-f31bdb4d-6429-41a0-977d-81b01aa5d642.png)
+
+#### ３. タスクの実行
+
+タスク一覧から作成したタスクを右クリックし、「実行する」を選択します。
+
+![image](https://user-images.githubusercontent.com/73327236/173046521-0e25db79-faef-4bc5-b061-dedb659ff659.png)
+
+タスク スケジューラの設定は以上です。
+
+
+次に1時間毎に収集した河川のデータを可視化するため、 Power BI Desktop の設定を行います。
+
+### 3. Power BI Desktop の設定
 
 #### 1. PBIX ファイルのダウンロード
 
@@ -90,3 +176,5 @@ Power BI Desktop で「データの更新」を押します。
 ![image](https://user-images.githubusercontent.com/8349954/172524207-5d9c74fa-e015-4b39-ab17-8850fba696ca.png)
 
 以上で、Power BI Desktop の設定は完了です。
+
+

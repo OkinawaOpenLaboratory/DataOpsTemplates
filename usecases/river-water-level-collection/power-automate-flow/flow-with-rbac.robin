@@ -1,0 +1,44 @@
+DateTime.GetCurrentDateTime.Current DateTimeFormat: DateTime.DateTimeFormat.DateAndTime Offset: $'''Asia/Tokyo''' CurrentDateTime=> dateTime
+Text.ConvertDateTimeToText.FromCustomDateTime DateTime: dateTime CustomFormat: $'''yyyyMMdd''' Result=> dateTime_yyyyMMdd
+Text.ConvertDateTimeToText.FromCustomDateTime DateTime: dateTime CustomFormat: $'''HH:00''' Result=> dateTime_HH00
+WebAutomation.LaunchChrome.LaunchChrome Url: $'''http://www1.river.go.jp/cgi-bin/SrchSiteSuiData2.exe?SUIKEI=90334000&BGNDATE=%dateTime_yyyyMMdd%&ENDDATE=%dateTime_yyyyMMdd%&ID=301010190001010:0201;''' WindowState: WebAutomation.BrowserWindowState.Normal ClearCache: False ClearCookies: False WaitForPageToLoadTimeout: 60 Timeout: 60 BrowserInstance=> browser
+WebAutomation.ExtractData.ExtractHtmlTable BrowserInstance: browser Control: $'''html > body > center > table > tbody > tr:eq(2) > td > table > tbody > tr > td:eq(0) > table''' ExtractionParameters: {[$'''Value #1''', $'''Value #2''', $'''Value #3'''], [$'''''', $'''''', $''''''] } PostProcessData: False TimeoutInSeconds: 60 ExtractedData=> waterLevelTable
+WebAutomation.CloseWebBrowser BrowserInstance: browser
+LOOP FOREACH row IN waterLevelTable
+    SET time TO row[1]
+    IF time = dateTime_HH00 THEN
+        SET waterLevel TO row[2]
+        EXIT LOOP
+    END
+END
+Web.InvokeWebService.InvokeWebService Url: $'''http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://cosmos.azure.com''' Method: Web.Method.Get Accept: $'''application/json''' ContentType: $'''application/json''' CustomHeaders: $'''metadata: true''' ConnectionTimeout: 30 FollowRedirection: True ClearCookies: False FailOnErrorStatus: False EncodeRequestBody: True UserAgent: $'''Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.21) Gecko/20100312 Firefox/3.6''' Encoding: Web.Encoding.AutoDetect AcceptUntrustedCertificates: False ResponseHeaders=> tokenHeaders Response=> tokenResponse StatusCode=> tokenStatusCode
+Variables.ConvertJsonToCustomObject Json: tokenResponse CustomObject=> tokenResponseJsonObject
+SET token TO tokenResponseJsonObject['access_token']
+Scripting.RunPowershellScript Script: $'''$(Get-Date -format R)''' ScriptOutput=> dateTime_rfc1123 ScriptError=> ScriptError1
+Text.Trim Text: dateTime_rfc1123 TrimOption: Text.TrimOption.Both TrimmedText=> dateTime_rfc1123
+Cryptography.HashText HashAlgorithm: Cryptography.HashAlgorithm.SHA256 Encoding: Cryptography.EncryptionEncoding.Unicode TextToHash: $'''%dateTime_rfc1123%benoki''' HashedText=> documentId
+Web.InvokeWebService.InvokeWebService Url: $'''https://dataops-cosmos.documents.azure.com/dbs/OkinawaRiverDB/colls/benoki/docs''' Method: Web.Method.Post Accept: $'''application/json''' ContentType: $'''application/json''' CustomHeaders: $'''x-ms-version: 2018-12-31
+authorization: type=aad&ver=v1.0&sig=%token%
+x-ms-documentdb-is-upsert: True
+x-ms-documentdb-partitionkey: [ \"shimobenokigawa\" ]''' RequestBody: $'''{
+    \"id\": \"%documentId%\",
+    \"type\": \"river\",
+    \"observationPointName\": \"下辺野喜\",
+    \"riverName\": \"shimobenokigawa\",
+    \"address\": \"沖縄県国頭郡国頭村字辺野喜川河川敷\",
+    \"location\": {
+        \"type\": \"Point\",
+        \"coordinates\": [
+            26.4746,
+            128.1422
+        ]
+    },
+    \"phone\": \"0980-53-2442\",
+    \"rainfall\": null,
+    \"waterLevel\": %waterLevel%,
+    \"basinArea\": 12,
+    \"updateTime\": \"%dateTime%\"
+}''' ConnectionTimeout: 30 FollowRedirection: True ClearCookies: False FailOnErrorStatus: False EncodeRequestBody: False UserAgent: $'''Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.21) Gecko/20100312 Firefox/3.6''' Encoding: Web.Encoding.utf_8 AcceptUntrustedCertificates: False ResponseHeaders=> cosmosDBResponseHeaders Response=> cosmosDBResponse StatusCode=> cosmosDBStatusCode
+ON ERROR
+    CALL ErrorNotify
+END

@@ -8,7 +8,11 @@
 
 ### 1. Power Automate Desktop の設定
 
-#### 1. 新しいフローの作成
+このドキュメントでは、Cosmos DB のプライマリーキーを使用したデータ登録を説明します。
+
+ユーザー割り当てマネージド ID を使用したデータ登録の方法は[こちら](https://raw.githubusercontent.com/OkinawaOpenLaboratory/DataOpsTemplates/main/usecases/river-water-level-collection/write-data-with-manaaged-id/README.md)を参照してください。 
+
+#### 1.1. 新しいフローの作成
 
 Power Automate Desktop を起動し、新しいフローを作成します。
 
@@ -16,31 +20,31 @@ Power Automate Desktop を起動し、新しいフローを作成します。
 
 <img width="915" alt="image" src="https://user-images.githubusercontent.com/8349954/172269075-c5e032ef-d347-4c06-abdf-3a6c56a00c53.png">
 
-#### 2. メインフローのコピー
+#### 1.2. メインフローのコピー
 
 [メインフロー](https://raw.githubusercontent.com/OkinawaOpenLaboratory/DataOpsTemplates/main/usecases/river-water-level-collection/power-automate-flow/flow.robin)を全選択し、コピーします。
 
 <img width="1175" alt="image" src="https://user-images.githubusercontent.com/8349954/172268359-5801cabb-f941-4db1-b4b4-3e8c096d0163.png">
 
-#### 3. メインフローの貼り付け
+#### 1.3. メインフローの貼り付け
 
 メインフローをフローエディターへ貼り付けます。(Ctrl+V)
 
 <img width="1364" alt="image" src="https://user-images.githubusercontent.com/8349954/172269577-07b067c4-0455-47da-8bc1-9db08f6ac8a0.png">
 
-#### 4. エラー通知サブフローのコピー
+#### 1.4. エラー通知サブフローのコピー
 
 [エラー通知サブフロー](https://raw.githubusercontent.com/OkinawaOpenLaboratory/DataOpsTemplates/main/usecases/river-water-level-collection/power-automate-flow/error-notify.robin)を全選択し、コピーします。
 
 <img width="1180" alt="image" src="https://user-images.githubusercontent.com/8349954/172268735-c8be0a6b-5364-49b8-b961-d5d64e5961d7.png">
 
-#### 5. エラー通知サブフローの貼り付け
+#### 1.5. エラー通知サブフローの貼り付け
 
 エラー通知サブフローをフローエディターへ貼り付けます。
 
 <img width="949" alt="image" src="https://user-images.githubusercontent.com/8349954/172270636-52ab6a09-cd4c-4d33-95a1-e999ff51363d.png">
 
-#### 6. アクションの設定
+#### 1.6. アクションの設定
 
 Mainフロー内の以下のアクション番号をダブルクリックし変数に対しての値を設定します。
 
@@ -60,7 +64,7 @@ Mainフロー内の以下のアクション番号をダブルクリックし変�
 
 Power Automate Desktop で作成したフローを1時間毎に実行できるよう、タスク スケジューラの設定を行います。
 
-#### 1. PowerShellスクリプトファイルのダウンロード
+#### 2.1. PowerShellスクリプトファイルのダウンロード
 
 タスク スケジューラで実行する [PowerShellスクリプトファイル](https://github.com/OkinawaOpenLaboratory/DataOpsTemplates/blob/main/usecases/river-water-level-collection/power-automate-flow/startPADFlow.ps1)をダウンロードします。検索画面から PowerShell を立ち上げ、以下のコマンドを入力し、実行します。
 
@@ -72,7 +76,7 @@ curl https://raw.githubusercontent.com/OkinawaOpenLaboratory/DataOpsTemplates/ma
 
 ![image](https://user-images.githubusercontent.com/73327236/173043934-a514b258-7fc8-4072-8cbe-5fa0234a69a5.png)
 
-#### 2. タスクの作成
+#### 2.2. タスクの作成
 
 検索画面からタスク スケジューラを立ち上げます。
 
@@ -131,7 +135,7 @@ curl https://raw.githubusercontent.com/OkinawaOpenLaboratory/DataOpsTemplates/ma
 
 ![image](https://user-images.githubusercontent.com/73327236/173046240-f31bdb4d-6429-41a0-977d-81b01aa5d642.png)
 
-#### ３. タスクの実行
+#### 2.3. タスクの実行
 
 タスク一覧から作成したタスクを右クリックし、「実行する」を選択します。
 
@@ -144,13 +148,13 @@ curl https://raw.githubusercontent.com/OkinawaOpenLaboratory/DataOpsTemplates/ma
 
 ### 3. Power BI Desktop の設定
 
-#### 1. PBIX ファイルのダウンロード
+#### 3.1. PBIX ファイルのダウンロード
 
 河川水位データダッシュボードの [PBIX ファイル](https://github.com/OkinawaOpenLaboratory/DataOpsTemplates/blob/main/usecases/river-water-level-collection/power-bi-dashboard/water-level-dashboard.pbix)をダウンロードします。
 
 ![image](https://user-images.githubusercontent.com/8349954/172521089-51831fe0-8281-40eb-aa79-153ef210603c.png)
 
-#### 2. PBIX ファイルの読み込み
+#### 3.2. PBIX ファイルの読み込み
 
 Power BI Desktop を起動し、「ファイル」→「レポートを開く」→「レポートの参照」から、ダウンロードした河川水位データダッシュボードの PBIX ファイルを開きます。
 
@@ -158,14 +162,14 @@ Power BI Desktop を起動し、「ファイル」→「レポートを開く」
 
 PBIX ファイルの読み込みが完了すると、ダッシュボードが表示されます。
 
-#### 3. 読み取り専用プライマリキーの取得
+#### 3.3. 読み取り専用プライマリキーの取得
 
 Cosmos DB データソースから河川水位データを取得するには、Cosmos DBが発行する読み取り専用プライマリキーを設定する必要があります。
 読み取り専用プライマリキーは Azure Portal から確認できます。
 
 ![image](https://user-images.githubusercontent.com/8349954/172524002-7d5a68a4-53a4-41de-a8b4-eef9b4c4fe5c.png)
 
-#### 4. 読み取り専用プライマリキーの設定
+#### 3.4. 読み取り専用プライマリキーの設定
 
 Power BI Desktop で「データの更新」を押します。
 

@@ -88,7 +88,7 @@ Power Automate Desktop を起動し、新しいフローを作成します。
 
 #### 2.2. メインフローのコピー
 
-[メインフロー](https://raw.githubusercontent.com/OkinawaOpenLaboratory/DataOpsTemplates/main/usecases/river-water-level-collection/power-automate-flow/flow-with-rbac.robin)を全選択し、コピーします。
+[メインフロー](https://raw.githubusercontent.com/OkinawaOpenLaboratory/DataOpsTemplates/main/usecases/river-water-level-collection/power-automate-flow/flow-with-managed-id.robin)を全選択し、コピーします。
 
 <img width="1180" alt="image" src="https://user-images.githubusercontent.com/73327236/174957344-0bd58c6f-fefb-4cb1-9157-30f9181c3b3e.png">
 

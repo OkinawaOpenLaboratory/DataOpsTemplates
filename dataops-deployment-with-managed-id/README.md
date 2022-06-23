@@ -11,6 +11,7 @@
   - Power BI Desktop
 - Azure CosmosDB
 - Azure Bastion
+- User Assigned Managed ID
 
 ![image](https://user-images.githubusercontent.com/8349954/170065753-a30fe769-e0c2-4aea-aacf-133eecdbbf3b.png)
 
@@ -47,4 +48,4 @@ Azure ポータルからテンプレートをデプロイします。
 
 これで設定は完了です。
 
-[Power Automate Desktop 及び、Power BI Desktop](https://github.com/OkinawaOpenLaboratory/DataOpsTemplates/tree/main/usecases/river-water-level-collection) の設定に進んでください。
+[Power Automate Desktop 及び、Power BI Desktop](https://github.com/OkinawaOpenLaboratory/DataOpsTemplates/tree/main/usecases/river-water-level-collection/write-data-with-managed-id.README.md) の設定に進んでください。

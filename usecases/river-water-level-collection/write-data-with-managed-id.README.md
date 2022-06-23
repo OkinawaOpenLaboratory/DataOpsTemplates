@@ -12,35 +12,14 @@
 
 まずマネージド ID を設定します。
 
-#### 1.1. マネージド ID の作成
+#### 1.1. マネージド ID のオブジェクト ID の確認
 
-Azure Portal で「マネージド ID 」を検索し、「作成」を選択します。
-
-![image](https://user-images.githubusercontent.com/73327236/174905706-ae990a6e-2051-49ac-971b-6a616dc6989d.png)
-
-サブスクリプション、リソースグループ、リージョン、Name を入力し、「確認及び作成」を選択し、マネージド ID を作成します。
-
-![image](https://user-images.githubusercontent.com/73327236/174906362-1a4a3276-ebe2-468a-bf7a-6fc15d612fb5.png)
-
-作成したマネージド ID のオブジェクト(プリンシパル) ID をコピーします。
+Azure Portal で「マネージド ID 」を検索し、マネージド ID の管理画面を開きます。
+「pad-cosmos-read-write」のオブジェクト(プリンシパル) ID をコピーします。
 
 ![image](https://user-images.githubusercontent.com/73327236/174906682-7c4db55f-c8b5-405b-91b4-28cdd1bd5a0e.png)
 
-#### 1.2. マネージド ID を仮想マシンへの紐付け
-
-作成したマネージド ID  を仮想マシンへ紐付けます。
-
-Azure Portal で「Virtual Machines」を検索し、マネージド ID を紐付ける仮想マシンを選択します。
-
-ID の編集画面を開き、「ユーザー割り当て済み」を選択し、作成したマネージド ID を追加します。
-
-![image](https://user-images.githubusercontent.com/73327236/174908225-3e478fdf-42da-490d-a47e-4065f4ac2527.png)
-
-「ユーザー割り当て済み」にマネージド ID が追加されます。
-
-![image](https://user-images.githubusercontent.com/73327236/174908274-cf11afe4-8e28-4bc6-bd47-8a9d30f632c7.png)
-
-#### 1.3. マネージド ID へのロールの付与
+#### 1.2. マネージド ID へのロールの付与
 
 Power Shell を使用し、Azure Power Shell にログインします。
 

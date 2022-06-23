@@ -16,6 +16,15 @@ DataOps deployment は、DataOps の環境に必要な以下のリソースを�
 
 展開された Windows Server には、Power Automate Desktop と Power BI Desktop が自動的にインストールされます。
 
+### - [DataOps deployment with managed id](https://github.com/OkinawaOpenLaboratory/DataOpsTemplates/tree/main/dataops-deployment-with-managed-id)
+
+DataOps deployment with managed id は、Power Automate Desktop から Cosmos DB へ接続するための認証に Azure Managed ID を使用できるテンプレートです。DataOps Deployment の構成に加えて、Azure Managed ID の定義が含まれます。
+
+- Virtual Machine (Windows Server 2022)
+- Bastion
+- CosmosDB
+- User Assigned Managed ID
+
 ### - [DataOps deployment with automated bastion lifecycle](https://github.com/OkinawaOpenLaboratory/DataOpsTemplates/tree/main/dataops-deployment-with-automated-bastion-lifecycle)
 
 DataOps deployment with automated bastion lifecycle は、 DataOps deployment の構成に加えて、Azure Bastion を指定した時間に自動的に作成・削除するための Azure Automation の定義が含まれます。

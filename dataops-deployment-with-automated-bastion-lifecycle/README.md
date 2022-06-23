@@ -74,3 +74,5 @@ Azure CLI へ Azure リソースの操作を許可を設定するために、Azu
 ![image](https://user-images.githubusercontent.com/8349954/170048048-9faba563-f0df-49db-95c2-c0915c3378e4.png)
 
 これで設定は完了です。
+
+[Power Automate Desktop 及び、Power BI Desktop](https://github.com/OkinawaOpenLaboratory/DataOpsTemplates/tree/main/usecases/river-water-level-collection) の設定に進んでください。

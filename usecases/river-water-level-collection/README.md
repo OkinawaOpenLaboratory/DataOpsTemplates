@@ -1,5 +1,8 @@
 # 河川水位データ可視化ユースケース
 
+このドキュメントでは、Cosmos DB の認証にプライマリキーを使用します。
+マネージド ID を使用する手順を[こちら](https://github.com/OkinawaOpenLaboratory/DataOpsTemplates/tree/main/usecases/river-water-level-collection/write-data-with-managed-id.README.md)を参照してください。
+
 ## 事前準備
 
 事前に Google Chrome をインストールし、Microsoft Power Automate Extension を有効にしてください。
@@ -10,7 +13,7 @@
 
 このドキュメントでは、Cosmos DB のプライマリーキーを使用したデータ登録を説明します。
 
-ユーザー割り当てマネージド ID を使用したデータ登録の方法は[こちら](https://raw.githubusercontent.com/OkinawaOpenLaboratory/DataOpsTemplates/main/usecases/river-water-level-collection/write-data-with-manaaged-id/README.md)を参照してください。 
+ユーザー割り当てマネージド ID を使用したデータ登録の方法は[こちら](https://raw.githubusercontent.com/OkinawaOpenLaboratory/DataOpsTemplates/main/usecases/river-water-level-collection/write-data-with-manaaged-id/README.md)を参照してください。
 
 #### 1.1. 新しいフローの作成
 

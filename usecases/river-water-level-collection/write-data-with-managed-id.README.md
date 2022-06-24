@@ -6,6 +6,8 @@
 
 また、Azure Power Shell をインストールしてください。
 
+Azure Power Shell のバージョンは7.2.2を使用しています。 
+
 ## 設定方法
 
 ### 1. マネージド ID の設定

@@ -13,7 +13,7 @@
 
 このドキュメントでは、Cosmos DB のプライマリーキーを使用したデータ登録を説明します。
 
-ユーザー割り当てマネージド ID を使用したデータ登録の方法は[こちら](https://raw.githubusercontent.com/OkinawaOpenLaboratory/DataOpsTemplates/main/usecases/river-water-level-collection/write-data-with-manaaged-id/README.md)を参照してください。
+ユーザー割り当てマネージド ID を使用したデータ登録の方法は[こちら](https://github.com/OkinawaOpenLaboratory/DataOpsTemplates/blob/main/usecases/river-water-level-collection/write-data-with-managed-id.README.md)を参照してください。
 
 #### 1.1. 新しいフローの作成
 

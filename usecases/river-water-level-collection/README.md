@@ -1,6 +1,6 @@
 # 河川水位データ可視化ユースケース
 
-このドキュメントでは、Cosmos DB の認証にプライマリキーを使用します。
+このドキュメントでは、Cosmos DB の認証にマスターキーのプライマリキーを使用します。
 マネージド ID を使用する手順を[こちら](https://github.com/OkinawaOpenLaboratory/DataOpsTemplates/tree/main/usecases/river-water-level-collection/write-data-with-managed-id.README.md)を参照してください。
 
 ## 事前準備
@@ -11,7 +11,7 @@
 
 ### 1. Power Automate Desktop の設定
 
-このドキュメントでは、Cosmos DB のプライマリーキーを使用したデータ登録を説明します。
+このドキュメントでは、Cosmos DB のマスターキーのプライマリーキーを使用したデータ登録を説明します。
 
 ユーザー割り当てマネージド ID を使用したデータ登録の方法は[こちら](https://github.com/OkinawaOpenLaboratory/DataOpsTemplates/blob/main/usecases/river-water-level-collection/write-data-with-managed-id.README.md)を参照してください。
 
@@ -55,7 +55,7 @@ Mainフロー内の以下のアクション番号をダブルクリックし変�
 | --- | --- | --- |
 | 1 | resourceType | docs |
 | 2 | resourceLink | dbs/OkinawaRiverDB/colls/benoki |
-| 3 | primaryKey | Azure Portal から取得した Cosmos DB のプライマリキー |
+| 3 | primaryKey | Azure Portal から取得した Cosmos DB のマスターキーのプライマリキー |
 
 <img width="629" alt="image" src="https://user-images.githubusercontent.com/73327236/172785824-8f3ffb94-df02-4c0b-9f3a-81110b758071.png">
 <img width="632" alt="image" src="https://user-images.githubusercontent.com/73327236/172791998-325efbe2-70ee-4b0a-87a0-df93e078f37e.png">

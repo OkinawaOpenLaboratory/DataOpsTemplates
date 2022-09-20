@@ -13,12 +13,12 @@ Function Fetch-RiverData {
     Return ConvertFrom-Json $formattedJsonText
 }
 
-Function Write-File([string]$jsonData, [string]$path = ".") {
+Function Write-File($jsonData, [string]$path = ".") {
     Write-Host "--JSONファイルの出力"
         $outputFilePath = $path+"\OkinawaRiverInfo\okinawa-river-info-latest.json"
-        ConvertTo-Json $data -Depth 100 | Out-File (New-Item -Path $outputFilePath -Force)
+        ConvertTo-Json $jsonData -Depth 100 | Out-File (New-Item -Path $outputFilePath -Force)
         $outputFilePath = $path+"\OkinawaRiverInfo\okinawa-river-info-$(Get-Date -UFormat '%Y%m%d%H%M').json"
-        ConvertTo-Json $data -Depth 100 | Out-File (New-Item -Path $outputFilePath -Force)
+        ConvertTo-Json $jsonData -Depth 100 | Out-File (New-Item -Path $outputFilePath -Force)
 }
 
 Main

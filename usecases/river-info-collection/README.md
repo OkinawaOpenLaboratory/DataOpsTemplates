@@ -1,16 +1,18 @@
-# Power Shell を使用した河川データの収集
+# 沖縄県河川情報データ可視化ユースケース
 
-Power Shell を使用し[沖縄県河川情報システム](http://www.bousai.okinawa.jp/river/kasen/)の複数河川の①水位・雨量データ(DBDAT_dat.js)、②観測所の緯度経度や危険水位のデータ（DBDAT_inf.js）を JSON 形式のファイルで取得します。
+Power Shell 、Power BI Desktop を使用し[沖縄県河川情報システム](http://www.bousai.okinawa.jp/river/kasen/)の複数河川の①水位・雨量データ(DBDAT_dat.js)、②観測所の緯度経度や危険水位のデータ（DBDAT_inf.js）を可視化します。
 
 ![image](https://user-images.githubusercontent.com/73327236/182054171-6200c435-66c0-4435-b63b-aba38ec90d66.png)
 
 ## 事前準備
 
-1. [DataOps deployment for okinawa river info](https://github.com/OkinawaOpenLaboratory/DataOpsTemplates/tree/main/dataops-deployment-of-okinawa-river-info)を使用し、本ユースケースで使用する環境をデプロイしてください。
+1. [DataOps deployment for okinawa river info](https://github.com/OkinawaOpenLaboratory/DataOpsTemplates/tree/main/dataops-deployment-for-okinawa-river-info) を使用し、本ユースケースで使用する環境をデプロイしてください。
 
 2. VM 上に Power Shell 7をインストールしてください。(Power Shell のバージョンは7.2.5で動作確認しています。)
 
 3. Azure Power Shell をインストールしてください。(Azure Power Shell のバージョンは7.2.2で動作確認しています。)
+
+4. VM上の言語を日本語、タイムゾーンを大阪、札幌、東京に設定してください。
 
 ## 設定方法
 
@@ -21,9 +23,9 @@ Power Shell を使用し[沖縄県河川情報システム](http://www.bousai.ok
 #### 1.1. マネージド ID のオブジェクト ID の確認
 
 Azure Portal で「マネージド ID 」を検索し、マネージド ID の管理画面を開きます。
-「pad-cosmos-read-write」のオブジェクト(プリンシパル) ID をコピーします。
+「cosmosdb-read-write」のオブジェクト(プリンシパル) ID をコピーします。
 
-![image](https://user-images.githubusercontent.com/73327236/174906682-7c4db55f-c8b5-405b-91b4-28cdd1bd5a0e.png)
+![image](https://user-images.githubusercontent.com/73327236/191675895-d0a827e2-c13b-4d3b-8359-efa61b05b99f.png)
 
 #### 1.2. マネージド ID へのロールの付与
 
@@ -52,12 +54,12 @@ $principalId = "<マネージド ID のオブジェクト(プリンシパル) ID
 
 New-AzCosmosDBSqlRoleAssignment -AccountName $accountName `
   -ResourceGroupName $resourceGroupName `
-  -RoleDefinitionId $cosmosDBReadWirteRoleDefinitionID `
+  -RoleDefinitionId $cosmosDBReadWriteRoleDefinitionID `
   -Scope "/" `
   -PrincipalId $principalId
 ```
 
-以上がマネージド ID の設定になります。次に データ収集を行う PowerShellスクリプト の設定を行います。
+以上がマネージド ID の設定になります。次にデータ収集を行う PowerShellスクリプト の設定を行います。
 
 ### 2. データ収集するPower Shell スクリプトの設定
 
@@ -72,31 +74,31 @@ New-AzCosmosDBSqlRoleAssignment -AccountName $accountName `
 | [collect_okinawa_river_data.ps1](https://github.com/OkinawaOpenLaboratory/DataOpsTemplates/blob/main/usecases/river-info-collection/powershell-scripts/collect_okinawa_river_data.ps1) | 沖縄県河川情報システムから複数河川の水位・雨量データを取得し、Cosmos DBに登録する |
 | [collect_okinawa_river_info.ps1](https://github.com/OkinawaOpenLaboratory/DataOpsTemplates/blob/main/usecases/river-info-collection/powershell-scripts/collect_okinawa_river_info.ps1) | 沖縄県河川情報システムから観測所の緯度経度や危険水位を取得し、JSON形式のファイルで出力する |
 
-VM 上の検索画面から PowerShell を立ち上げます。
+VM 上の検索画面からコマンド プロンプトを立ち上げます。
 
-![image](https://user-images.githubusercontent.com/73327236/177271665-1fc76b91-a24a-4640-96f3-9b7c182b3f21.png)
+![image](https://user-images.githubusercontent.com/73327236/191367222-7d238152-b79c-4736-b7a9-64297832f701.png)
 
-Power Shell で以下のコマンドを入力し、スクリプトファイルのダウンロードします。
+コマンド プロンプトで以下のコマンドを入力し、スクリプトファイルのダウンロードします。
 
 [collect_okinawa_river_data.ps1](https://github.com/OkinawaOpenLaboratory/DataOpsTemplates/blob/main/usecases/river-info-collection/powershell-scripts/collect_okinawa_river_data.ps1)
 
 ```
-curl https://github.com/OkinawaOpenLaboratory/DataOpsTemplates/blob/main/usecases/river-info-collection/powershell-scripts/collect_okinawa_river_data.ps1 > ~\Documents\collect_okinawa_river_data.ps1
+curl https://raw.githubusercontent.com/OkinawaOpenLaboratory/DataOpsTemplates/main/usecases/river-info-collection/powershell-scripts/collect_okinawa_river_data.ps1 > .\Documents\collect_okinawa_river_data.ps1
 ```
 
-![image](https://user-images.githubusercontent.com/73327236/182060309-5eff4cf2-6f82-4317-aac6-e57895b3ee81.png)
+![image](https://user-images.githubusercontent.com/73327236/191367732-ac7dc3a9-a5ec-48f4-8596-2c5e11bd9077.png)
 
 [collect_okinawa_river_info.ps1](https://github.com/OkinawaOpenLaboratory/DataOpsTemplates/blob/main/usecases/river-info-collection/powershell-scripts/collect_okinawa_river_info.ps1)
 
 ```
-curl https://github.com/OkinawaOpenLaboratory/DataOpsTemplates/blob/main/usecases/river-info-collection/powershell-scripts/collect_okinawa_river_info.ps1 > ~\Documents\collect_okinawa_river_data.ps1
+curl https://raw.githubusercontent.com/OkinawaOpenLaboratory/DataOpsTemplates/main/usecases/river-info-collection/powershell-scripts/collect_okinawa_river_info.ps1 > .\Documents\collect_okinawa_river_info.ps1
 ```
 
-![image](https://user-images.githubusercontent.com/73327236/182060393-78243785-d8f7-41d7-af2f-fd690a3ed658.png)
+![image](https://user-images.githubusercontent.com/73327236/191368198-11842a21-cfc3-426d-9e87-25914e5bb744.png)
 
 #### 2.2 Power Shell スクリプトファイルの実行
 
-[collect_okinawa_river_data.ps1](https://github.com/OkinawaOpenLaboratory/DataOpsTemplates/blob/main/usecases/river-info-collection/powershell-scripts/collect_okinawa_river_data.ps1)を タスクスケジューラで1時間ごとに実行します。
+[collect_okinawa_river_data.ps1](https://github.com/OkinawaOpenLaboratory/DataOpsTemplates/blob/main/usecases/river-info-collection/powershell-scripts/collect_okinawa_river_data.ps1)をタスクスケジューラで1時間ごとに実行します。
 
 検索画面からタスク スケジューラを立ち上げます。
 
@@ -158,9 +160,9 @@ curl https://github.com/OkinawaOpenLaboratory/DataOpsTemplates/blob/main/usecase
 
 ![image](https://user-images.githubusercontent.com/73327236/173046521-0e25db79-faef-4bc5-b061-dedb659ff659.png)
 
-collect_okinawa_river_data.ps１　の実行は以上です。
+collect_okinawa_river_data.ps1 の実行は以上です。
 
-続いて、ダウンロードした [collect_okinawa_river_info.ps1](https://github.com/OkinawaOpenLaboratory/DataOpsTemplates/blob/main/usecases/river-info-collection/powershell-scripts/collect_okinawa_river_info.ps1)　をPowerShellで実行します。
+続いて、ダウンロードした [collect_okinawa_river_info.ps1] (https://github.com/OkinawaOpenLaboratory/DataOpsTemplates/blob/main/usecases/river-info-collection/powershell-scripts/collect_okinawa_river_info.ps1)を PowerShell で実行します。
 
 ```
 ~\Documents\collect_okinawa_river_info.ps1
@@ -168,5 +170,48 @@ collect_okinawa_river_data.ps１　の実行は以上です。
 
 ![image](https://user-images.githubusercontent.com/73327236/182060467-a315b688-ce0a-48a9-887b-9ded02ad4349.png)
 
-データを収集するPowerShellスクリプトの設定は以上になります。
+データを収集する PowerShell スクリプトの設定は以上になります。
 
+次に収集した河川情報を可視化する Power BI Desktop の設定を行います。
+
+### 3. Power BI Desktop の設定
+
+#### 3.1. PBIX ファイルのダウンロード
+
+河川水位データダッシュボードの [PBIX ファイル](https://github.com/OkinawaOpenLaboratory/DataOpsTemplates/blob/main/usecases/river-water-level-collection/power-bi-dashboard/water-level-dashboard.pbix)をダウンロードします。
+
+#### 3.2. PBIX ファイルの読み込み
+
+Power BI Desktop を起動し、「ファイル」→「レポートを開く」→「レポートの参照」から、ダウンロードした河川水位データダッシュボードの PBIX ファイルを開きます。
+
+![image](https://user-images.githubusercontent.com/73327236/191370675-8beded81-62fc-42c3-8959-ddf6e3830015.png)
+
+PBIX ファイルの読み込みが完了すると、ダッシュボードが表示されます。
+
+#### 3.3. 読み取り専用プライマリキーの取得
+
+Cosmos DB データソースから河川水位データを取得するには、Cosmos DB が発行する読み取り専用プライマリキーを設定する必要があります。
+読み取り専用プライマリキーは Azure Portal から確認できます。
+
+![image](https://user-images.githubusercontent.com/8349954/172524002-7d5a68a4-53a4-41de-a8b4-eef9b4c4fe5c.png)
+
+#### 3.4. 読み取り専用プライマリキーの設定
+
+Power BI Desktop で「データの更新」を押します。
+
+![image](https://user-images.githubusercontent.com/73327236/191378704-0bd26004-4f5b-4063-9c33-b2291f315249.png)
+
+アカウントキーの入力が求められるので、読み取り専用プライマリキーを入力します。
+
+![image](https://user-images.githubusercontent.com/8349954/172524207-5d9c74fa-e015-4b39-ab17-8850fba696ca.png)
+
+#### 3.5. マップビジュアルのセキュリティ設定
+現在の設定ではマップが表示できるよう設定を変更します。「ファイル」→ 「オプションと設定」→ 「オプション」→「グローバル配下のセキュリティ」を開き、ArcGIS for Power BI の「地図と塗り分け地図の画像を使用する」にチェックボタンを押します。
+
+![image](https://user-images.githubusercontent.com/73327236/191378768-67adc47b-dd62-4e7d-bb90-1e95d267e136.png)
+
+チェック後、マップビジュアルが表示されていることを確認します。
+
+![image](https://user-images.githubusercontent.com/73327236/191379022-da628fb5-2973-4ecf-9541-eda49bb59fda.png)
+
+以上で、Power BI Desktop の設定は完了です。

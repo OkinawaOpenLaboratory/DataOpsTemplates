@@ -16,7 +16,7 @@ param vmNetworkInterfaceName string = 'dataops-vm-interface'
 @description('仮想マシンのネットワークセキュリティグループ名。')
 param networkSecurityGroupName string = 'dataops-vm-sg'
 @description('for Cosmos DB Managed Identity Name')
-param cosmosReadWriteManagedID string = 'pad-cosmos-read-write'
+param cosmosReadWriteManagedID string = 'cosmosdb-read-write'
 // CosmosDB Settings
 @description('Cosmos DBアカウント名。')
 param cosmosDBAccountName string = 'dataops-cosmos'

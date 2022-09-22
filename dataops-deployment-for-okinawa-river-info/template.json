@@ -60,7 +60,7 @@
     },
     "cosmosReadWriteManagedID": {
       "type": "string",
-      "defaultValue": "pad-cosmos-read-write",
+      "defaultValue": "cosmosdb-read-write",
       "metadata": {
         "description": "for Cosmos DB Managed Identity Name"
       }

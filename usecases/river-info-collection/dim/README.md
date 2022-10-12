@@ -1,10 +1,8 @@
 # 沖縄県河川情報データ可視化ユースケース
 
-Power Shell 、Power BI Desktop を使用し[沖縄県河川情報システム](http://www.bousai.okinawa.jp/river/kasen/)の複数河川の①水位・雨量データ(DBDAT_dat.js)、②観測所の緯度経度や危険水位のデータ（DBDAT_inf.js）を可視化します。
+dim や Power Shell 、Power BI Desktop を使用し[沖縄県河川情報システム](http://www.bousai.okinawa.jp/river/kasen/)の複数河川の①水位・雨量データ(DBDAT_dat.js)、②観測所の緯度経度や危険水位のデータ（DBDAT_inf.js）を可視化します。
 
-この記事はデータ収集に Power Shell スクリプトを使用しています。[dim](https://github.com/c-3lab/dim) と Power Shell を組み合わせたデータ収集を行う場合は[こちら](https://github.com/OkinawaOpenLaboratory/DataOpsTemplates/tree/main/usecases/river-water-level-collection/dim)を参照してください。
-
-![image](https://user-images.githubusercontent.com/73327236/182054171-6200c435-66c0-4435-b63b-aba38ec90d66.png)
+![image](https://user-images.githubusercontent.com/73327236/195083076-46c13100-5f5e-4b69-a51f-dae709520f62.png)
 
 ## 事前準備
 
@@ -14,7 +12,11 @@ Power Shell 、Power BI Desktop を使用し[沖縄県河川情報システム](
 
 3. Azure Power Shell をインストールしてください。(Azure Power Shell のバージョンは7.2.2で動作確認しています。)
 
-4. VM上の言語を日本語、タイムゾーンを大阪、札幌、東京に設定してください。
+4. [dim](https://github.com/c-3lab/dim) をインストールしてください。(dim のバージョンは1.0で動作確認しています。)
+
+5. VM 上の言語を日本語、タイムゾーンを大阪、札幌、東京に設定してください。
+
+6. VM 上で Git をインストールしてください(Git のバージョンは2.38.0で動作確認しています。)
 
 ## 設定方法
 
@@ -44,7 +46,7 @@ Connect-AzAccount
 | 変数名 | 値 |
 | --- | --- |
 | resourceGroupName | <リソースグループ名> |
-| accountName  | dataops-cosmos |
+| accountName | dataops-cosmos |
 | cosmosDBReadWriteRoleDefinitionID | 00000000-0000-0000-0000-000000000002 |
 | principalId | <マネージド ID のオブジェクト(プリンシパル) ID> |
 
@@ -61,46 +63,41 @@ New-AzCosmosDBSqlRoleAssignment -AccountName $accountName `
   -PrincipalId $principalId
 ```
 
-以上がマネージド ID の設定になります。次にデータ収集を行う PowerShellスクリプト の設定を行います。
+以上がマネージド ID の設定になります。次にデータ収集を行う dim の設定を行います。
 
-### 2. データ収集するPower Shell スクリプトの設定
+### 2. データ収集する dim の設定
 
-河川データを収集する2つのスクリプトファイルをダウンロードし、実行します。
+河川データを収集するスクリプトや dim.json をダウンロードし、実行します。
 
-#### 2.1 Power Shell スクリプトのダウンロード
+#### 2.1 データ収集時に使用するファイルのダウンロード
 
-河川データ収集で使用する下記の Power Shell スクリプトファイルをダウンロードします。
-
-| スクリプトファイル名 | 概要 |
-| --- | --- |
-| [collect_okinawa_river_data.ps1](https://github.com/OkinawaOpenLaboratory/DataOpsTemplates/blob/main/usecases/river-info-collection/powershell-scripts/collect_okinawa_river_data.ps1) | 沖縄県河川情報システムから複数河川の水位・雨量データを取得し、Cosmos DBに登録する |
-| [collect_okinawa_river_info.ps1](https://github.com/OkinawaOpenLaboratory/DataOpsTemplates/blob/main/usecases/river-info-collection/powershell-scripts/collect_okinawa_river_info.ps1) | 沖縄県河川情報システムから観測所の緯度経度や危険水位を取得し、JSON形式のファイルで出力する |
+河川データ収集で使用するスクリプトや dim.json をダウンロードします。
 
 VM 上の検索画面からコマンド プロンプトを立ち上げます。
 
 ![image](https://user-images.githubusercontent.com/73327236/191367222-7d238152-b79c-4736-b7a9-64297832f701.png)
 
-コマンド プロンプトで以下のコマンドを入力し、スクリプトファイルのダウンロードします。
-
-[collect_okinawa_river_data.ps1](https://github.com/OkinawaOpenLaboratory/DataOpsTemplates/blob/main/usecases/river-info-collection/powershell-scripts/collect_okinawa_river_data.ps1)
+コマンド プロンプトで下記のコマンドを入力し、河川データを収集するスクリプトや dim.json が格納されている [DataOpsTemplates](https://github.com/OkinawaOpenLaboratory/DataOpsTemplates) をダウンロードします。
 
 ```
-curl https://raw.githubusercontent.com/OkinawaOpenLaboratory/DataOpsTemplates/main/usecases/river-info-collection/powershell-scripts/collect_okinawa_river_data.ps1 > .\Documents\collect_okinawa_river_data.ps1
+git clone https://github.com/OkinawaOpenLaboratory/DataOpsTemplates.git
 ```
 
-![image](https://user-images.githubusercontent.com/73327236/191367732-ac7dc3a9-a5ec-48f4-8596-2c5e11bd9077.png)
+#### 2.2 dim の実行
 
-[collect_okinawa_river_info.ps1](https://github.com/OkinawaOpenLaboratory/DataOpsTemplates/blob/main/usecases/river-info-collection/powershell-scripts/collect_okinawa_river_info.ps1)
+dim を使用し沖縄県河川情報の[沖縄県河川情報システム](http://www.bousai.okinawa.jp/river/kasen/)の複数河川の①水位・雨量データ(DBDAT_dat.js)、②観測所の緯度経度や危険水位のデータ（DBDAT_inf.js）を収集します。
+
+①水位・雨量データ(DBDAT_dat.js)の収集
+
+VM 上の検索画面からコマンド プロンプトを立ち上げ、下記のコマンドを実行し、水位・雨量データの収集を実行します。
 
 ```
-curl https://raw.githubusercontent.com/OkinawaOpenLaboratory/DataOpsTemplates/main/usecases/river-info-collection/powershell-scripts/collect_okinawa_river_info.ps1 > .\Documents\collect_okinawa_river_info.ps1
+cd C:\Users\dataops_user\DataOpsTemplates\usecases\river-info-collection\dim
+
+dim install http://www.bousai.okinawa.jp/river/kasen/dat_js/DBDAT_dat.js -n "river-data" -p "cmd pwsh C:\Users\dataops-user\DataOpsTemplates\usecases\river-info-collection\dim\dim-process-scripts\convert_okinawa_river_data.ps1" -F
 ```
 
-![image](https://user-images.githubusercontent.com/73327236/191368198-11842a21-cfc3-426d-9e87-25914e5bb744.png)
-
-#### 2.2 Power Shell スクリプトファイルの実行
-
-[collect_okinawa_river_data.ps1](https://github.com/OkinawaOpenLaboratory/DataOpsTemplates/blob/main/usecases/river-info-collection/powershell-scripts/collect_okinawa_river_data.ps1)をタスクスケジューラで1時間ごとに実行します。
+タスクスケジューラで水位・雨量データの収集を1時間ごとに実行するよう設定します。
 
 検索画面からタスク スケジューラを立ち上げます。
 
@@ -129,7 +126,7 @@ curl https://raw.githubusercontent.com/OkinawaOpenLaboratory/DataOpsTemplates/ma
 | --- | --- |
 | タスクの開始 | スケジュールに従う |
 | 設定 | 1回 |
-| 開始日 | 実行する日時、時間(時間は〇〇:00が好ましい) |
+| 開始日 | 実行する日時、時間 |
 | 繰り返し時間 | 1時間 |
 | 継続時間 | 無制限 |
 
@@ -143,12 +140,13 @@ curl https://raw.githubusercontent.com/OkinawaOpenLaboratory/DataOpsTemplates/ma
 
 | 設定項目 | 値 |
 | --- | --- |
-| プログラム/スクリプト | "C:\Program Files\PowerShell\7\pwsh.exe" |
-| 引数の追加 | -Command "C:\Users\dataops_user\Documents\collect_okinawa_river_data.ps１" |
+| プログラム/スクリプト | C:\Program Files\PowerShell\7\pwsh.exe |
+| 引数の追加 | -Command "dim update river-data" |
+| 開始(オプション) | C:\Users\dataops_user\DataOpsTemplates\usecases\river-info-collection\dim |
 
 ![image](https://user-images.githubusercontent.com/73327236/173045553-2392e0e3-9553-4525-8237-556abe2b8795.png)
 
-![image](https://user-images.githubusercontent.com/73327236/182054557-b3c9a8b9-7b06-48ba-8c3b-117b0c8c0cc2.png)
+![image](https://user-images.githubusercontent.com/73327236/195088463-dd8f2266-50a4-4899-91af-919911bcdd5e.png)
 
 条件はデフォルト設定のままにします。
 
@@ -162,17 +160,21 @@ curl https://raw.githubusercontent.com/OkinawaOpenLaboratory/DataOpsTemplates/ma
 
 ![image](https://user-images.githubusercontent.com/73327236/173046521-0e25db79-faef-4bc5-b061-dedb659ff659.png)
 
-collect_okinawa_river_data.ps1 の実行は以上です。
+①水位・雨量データ(DBDAT_dat.js)収集の実行は以上です。
 
-続いて、ダウンロードした [collect_okinawa_river_info.ps1] (https://github.com/OkinawaOpenLaboratory/DataOpsTemplates/blob/main/usecases/river-info-collection/powershell-scripts/collect_okinawa_river_info.ps1)を PowerShell で実行します。
+続いて、 ②観測所の緯度経度や危険水位のデータ（DBDAT_inf.js）収集を dim で実行します。
+
+②観測所の緯度経度や危険水位のデータ（DBDAT_inf.js）収集
+
+VM 上の検索画面からコマンド プロンプトを立ち上げ、下記のコマンドを実行し、水位・雨量データの収集を実行します。
 
 ```
-~\Documents\collect_okinawa_river_info.ps1
+cd C:\Users\dataops-user\DataOpsTemplates\usecases\river-info-collection\dim
+
+dim install http://www.bousai.okinawa.jp/river/kasen/dat_js/DBDAT_inf.js -n "river-info" -p "cmd pwsh C:\Users\dataops_user\DataOpsTemplates\usecases\river-info-collection\dim\dim-process-scripts\collect_okinawa_river_info.ps1" -F
 ```
 
-![image](https://user-images.githubusercontent.com/73327236/182060467-a315b688-ce0a-48a9-887b-9ded02ad4349.png)
-
-データを収集する PowerShell スクリプトの設定は以上になります。
+②観測所の緯度経度や危険水位のデータ（DBDAT_inf.js）収集の設定は以上になります。
 
 次に収集した河川情報を可視化する Power BI Desktop の設定を行います。
 

@@ -2,7 +2,7 @@
 
 Power Shell 、Power BI Desktop を使用し[沖縄県河川情報システム](http://www.bousai.okinawa.jp/river/kasen/)の複数河川の①水位・雨量データ(DBDAT_dat.js)、②観測所の緯度経度や危険水位のデータ（DBDAT_inf.js）を可視化します。
 
-この記事はデータ収集に Power Shell スクリプトを使用しています。[dim](https://github.com/c-3lab/dim) と Power Shell を組み合わせたデータ収集を行う場合は[こちら](https://github.com/OkinawaOpenLaboratory/DataOpsTemplates/tree/main/usecases/river-water-level-collection/dim)を参照してください。
+この記事はデータ収集に Power Shell スクリプトを使用しています。[dim](https://github.com/c-3lab/dim) と Power Shell を組み合わせたデータ収集を行う場合は[こちら](https://github.com/OkinawaOpenLaboratory/DataOpsTemplates/tree/main/usecases/river-info-collection/dim)を参照してください。
 
 ![image](https://user-images.githubusercontent.com/73327236/182054171-6200c435-66c0-4435-b63b-aba38ec90d66.png)
 

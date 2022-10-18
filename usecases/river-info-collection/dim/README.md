@@ -94,7 +94,7 @@ VM 上の検索画面からコマンド プロンプトを立ち上げ、下記�
 ```
 cd C:\Users\dataops_user\DataOpsTemplates\usecases\river-info-collection\dim
 
-dim install http://www.bousai.okinawa.jp/river/kasen/dat_js/DBDAT_dat.js -n "river-data" -p "cmd pwsh C:\Users\dataops-user\DataOpsTemplates\usecases\river-info-collection\dim\dim-process-scripts\convert_okinawa_river_data.ps1" -F
+dim install
 ```
 
 タスクスケジューラで水位・雨量データの収集を1時間ごとに実行するよう設定します。
@@ -171,7 +171,7 @@ VM 上の検索画面からコマンド プロンプトを立ち上げ、下記�
 ```
 cd C:\Users\dataops-user\DataOpsTemplates\usecases\river-info-collection\dim
 
-dim install http://www.bousai.okinawa.jp/river/kasen/dat_js/DBDAT_inf.js -n "river-info" -p "cmd pwsh C:\Users\dataops_user\DataOpsTemplates\usecases\river-info-collection\dim\dim-process-scripts\collect_okinawa_river_info.ps1" -F
+dim update river-info
 ```
 
 ②観測所の緯度経度や危険水位のデータ（DBDAT_inf.js）収集の設定は以上になります。
